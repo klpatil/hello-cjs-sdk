@@ -1,4 +1,8 @@
 import { getClient } from '@optimizely/cms-sdk';
+import {
+  OptimizelyComponent,
+  withAppContext,
+} from '@optimizely/cms-sdk/react/server';
 
 type Props = {
   params: Promise<{
@@ -6,15 +10,13 @@ type Props = {
   }>;
 };
 
-export default async function Page({ params }: Props) {
+export async function Page({ params }: Props) {
   const { slug } = await params;
 
-  // gets an instance of the client
-  const client = getClient();
-  const path = `/${slug.join('/')}/`;
-  
-  // fetch content via the client
-  const content = await client.getContentByPath(path);
+  const client = getClient(); // No env vars needed
+  const content = await client.getContentByPath(`/${slug.join('/')}/`);
 
-   return <pre>{JSON.stringify(content[0], null, 2)}</pre>;
+  return <OptimizelyComponent content={content[0]} />;
 }
+
+export default withAppContext(Page);
